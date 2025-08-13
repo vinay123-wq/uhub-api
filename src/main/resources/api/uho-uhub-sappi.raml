@@ -1,0 +1,199 @@
+#%RAML 1.0
+title: uho-uhub-sappi
+baseUri: http://localhost:8080/covid/v1
+securitySchemes:
+  oauth2.0: !include /exchange_modules/46c8bfb3-3d3f-4cf1-8cc2-8cd372c026a3/uhub-0auth-20-security-scheme/1.0.0/uhub-0auth-20-security-scheme.raml
+  //basic: !include /exchange_modules/46c8bfb3-3d3f-4cf1-8cc2-8cd372c026a3/uho-basic-auth-security-scheme/1.0.0/uho-basic-auth-security-scheme.raml
+traits:
+  x-transaction-id: !include /exchange_modules/46c8bfb3-3d3f-4cf1-8cc2-8cd372c026a3/x-transaction-id/1.0.0/x-transaction-id.raml
+  x-correlation-id:  !include /exchange_modules/46c8bfb3-3d3f-4cf1-8cc2-8cd372c026a3/x-correlation-id/1.0.2/x-correlation-id.raml
+  query-param: !include  /query-params.raml
+uses:
+  uhub-uho-sappi: /uhu-uho-sappi-datatypes-library/uhub-sappi-data-types.raml
+  uhub-uho-sappi-lib: /exchange_modules/46c8bfb3-3d3f-4cf1-8cc2-8cd372c026a3/uhu-uho-sappi-common-data-type-library/1.0.1/uhu-uho-sappi-common-data-type-library.raml
+/cases :
+  post:
+    description: this API used to register record into DB
+    securedBy: [oauth2.0]
+    is: [ x-transaction-id,x-correlation-id]
+    body:
+      application/json:
+        type: uhub-uho-sappi.reg-cvd-req-data-type
+        example: !include examples/reg-cvd-req-ex.json          
+    responses:
+      201:
+        body:
+          application/json:
+            type: uhub-uho-sappi.reg-cvd-resp-data-type
+            example: !include examples/reg-cvd-res-ex.json
+      503:
+        body: 
+          application/json:
+            type: uhub-uho-sappi-lib.error-response
+            example: !include examples/error-ex.json    
+      400:
+        body:
+          application/json:
+            type: uhub-uho-sappi-lib.error-response
+            example: !include examples/error-ex.json
+              
+      500:
+        body:
+          application/json:
+            type: uhub-uho-sappi-lib.error-response
+            example: !include examples/error-ex.json 
+  put:
+    description: this API used to update record in DB
+    securedBy: [oauth2.0]
+    is: [ x-transaction-id,x-correlation-id]
+    body:
+      application/xml:
+        type: uhub-uho-sappi.update-cvd-req-data-type
+        example: !include examples/update-cvd-req-ex.xml
+    responses:
+      200:
+        body:
+          application/xml:
+            type: uhub-uho-sappi.update-cvd-res-datatype
+            example: !include examples/update-cvd-res-ex.xml
+              
+      503:
+        body:
+          application/xml:
+            type: uhub-uho-sappi.update-err-resp-data-type
+            example: !include examples/update-cvd-err-ex.xml
+              
+      400:
+        body:
+          application/xml:
+            type: uhub-uho-sappi.update-err-resp-data-type
+            example: !include examples/update-cvd-err-ex.xml
+      500:
+        body:
+          application/xml:
+            type: uhub-uho-sappi.update-err-resp-data-type
+            example: !include examples/update-cvd-err-ex.xml
+  /{nationalID}:
+    get:
+      description: this API used to get the specific record from DB
+      securedBy: [oauth2.0]
+      is: [ x-transaction-id,x-correlation-id]
+      responses:
+        200:
+          body:
+            application/json:
+              type: uhub-uho-sappi.select-cvd-res-datatype 
+              example: !include examples/select-by-id-res-ex.json         
+        404:
+          body:
+            application/json:
+              type: uhub-uho-sappi-lib.error-response
+              example: !include examples/error-ex.json
+        503:
+          body:
+            application/json:
+              type: uhub-uho-sappi-lib.error-response
+              example: !include examples/error-ex.json 
+        500:
+          body:
+            application/json:
+              type: uhub-uho-sappi-lib.error-response
+              example: !include examples/error-ex.json 
+/reports:
+  description: this API used to get the records or all records from DB
+  get:
+    securedBy: [oauth2.0]
+    is: [ x-transaction-id,x-correlation-id,query-param]
+    responses:
+      200:
+        body:
+          application/json:
+            type: uhub-uho-sappi.select-rep-state-cvd-res-data-type
+            example: !include examples/reports-res-ex.json
+      503:
+        body:
+          application/json:
+            type: uhub-uho-sappi-lib.error-response
+            example: !include examples/error-ex.json 
+      400:
+        body:
+          application/json:
+            type: uhub-uho-sappi-lib.error-response
+            example: !include examples/error-ex.json 
+      500:
+        body:
+          application/json:
+            type: uhub-uho-sappi-lib.error-response
+            example: !include examples/error-ex.json
+/health-check:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              {
+                "message": "uho uhub API is alive and kicking "
+              }
+
+      
+    
+    
+                
+
+              
+                
+
+          
+    
+
+
+          
+
+                  
+                  
+
+                      
+                        
+                  
+                  
+          
+          
+            
+
+  
+        
+              
+                  
+                  
+
+                  
+              
+
+
+        
+          
+
+
+
+
+
+
+                  
+
+                  
+
+      
+
+        
+      
+
+              
+
+          
+          
+          
+
+            
+              
+    

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+                <case>
+                  <status>503</status>
+                  <message>The (upstream) service is temporarily not available</message>
+                </case>

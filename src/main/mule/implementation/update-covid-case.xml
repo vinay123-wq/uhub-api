@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:xml-module="http://www.mulesoft.org/schema/mule/xml-module" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mule/xml-module/current/mule-xml-module.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="put:\cases:application\xml:uho-uhub-sappi-config">
+		<ee:transform doc:name="Transaction &amp; Correlation ID" doc:id="983e5137-0bdb-4253-95c1-cdfeeaf166b6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="x-transaction-id" ><![CDATA[attributes.headers.'x-transaction-id']]></ee:set-variable>
+				<ee:set-variable variableName="x-correlation-id" ><![CDATA[attributes.headers.'x-correlation-id']]></ee:set-variable>
+				<ee:set-variable variableName="covidPayload" ><![CDATA[payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Start Logger" doc:id="a323782b-0ad2-48ad-b16c-db2d7ba116a3" message='transactionID:#[vars."x-transaction-id"], correlationID#[vars."x-correlation-id"], flow has started' />
+		<db:update doc:name="Update" doc:id="b4edf591-bef4-4618-920b-8536f7c39989" config-ref="Database_Config" autoGenerateKeys="true" >
+			<db:sql ><![CDATA[update uhub set case_type = :caseType where case_id = :caseID]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	caseType: payload.covidCase.caseType,
+	caseID: payload.covidCase.caseID
+}]]]></db:input-parameters>
+			<db:auto-generated-keys-column-names >
+				<db:auto-generated-keys-column-name value="CASE_ID" />
+			</db:auto-generated-keys-column-names>
+		</db:update>
+		<ee:transform doc:name="Set Response" doc:id="7c24589d-05c3-4596-8786-259f954ed4b7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	"case": {
+		caseID: payload[0].CASE_ID as String
+	}
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="code" ><![CDATA[200]]></ee:set-variable>
+				<ee:set-variable variableName="message" ><![CDATA["OK"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="EndLogger" doc:id="33a54b6e-8033-44ee-b004-d732c69bf727" message="update covid case flow has ended" />
+
+    </flow></mule>

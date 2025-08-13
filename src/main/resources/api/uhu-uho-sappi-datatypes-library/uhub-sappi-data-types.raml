@@ -1,0 +1,375 @@
+#%RAML 1.0 Library
+usage: data types of uhub-uho-sappi api specification
+types:
+  reg-cvd-req-data-type:
+    type: object
+    properties:
+          source:
+            type: string
+            minLength: 1
+            maxLength: 60
+            required: true
+            example: "hospital"
+          caseType:
+            type: string
+            minLength: 1
+            maxLength: 10
+            required: true
+            example: "positive"
+          firstName:
+            type: string
+            minLength: 1
+            maxLength: 30
+            required: true
+            example: "jake"
+          lastName:
+            type: string
+            minLength: 1
+            maxLength: 30
+            required: true
+            example: "curry"
+          phone:
+            type: string
+            minLength: 1
+            maxLength: 15
+            required: true
+            example: "123-5214-625"
+          email:
+            type: string
+            minLength: 1
+            maxLength: 30
+            required: true
+            example: "test@test.com"
+          dateOfBirth:
+            type: string
+            required: true
+            example: "1989-04-26"
+          nationalID:
+            type: string
+            minLength: 1
+            maxLength: 20
+            required: true
+            example: "1251-5142"
+          nationalIDType:
+            type: string
+            minLength: 1
+            maxLength: 30
+            required: true
+            example: "SSN"
+          address:
+            type: object
+            properties:
+              streetAddress:
+                type: string
+                minLength: 1
+                maxLength: 50
+                required: true
+                example: "1600 Pennsylvania Avenue NW"
+              city:
+                type: string
+                minLength: 1
+                maxLength: 30
+                required: true
+                example: "washington"
+              state:
+                type: string
+                minLength: 1
+                maxLength: 30
+                required: true
+                example: "NewYork"
+              postal:
+                type: string
+                minLength: 1
+                maxLength: 30
+                required: true
+                example: "52500"
+              country:
+                type: string
+                minLength: 1
+                maxLength: 30
+                required: true
+                example: "America"
+  reg-cvd-resp-data-type:
+    type: object
+    properties:
+              caseID:
+                type: string
+                example: "12514"
+  select-by-state-cvd-res-data-type:
+    type: array
+    items:
+      type: object
+      properties:
+                    state:
+                      type: string
+                      required: true
+                      example: "texas"
+                    report:
+                      type: object
+                      properties:
+                        total:
+                          type: string
+                          required: true
+                          example: "texas"
+                        positive:
+                          type: string
+                          required: true
+                          example: "texas"
+                        recovered:
+                          type: string
+                          required: true
+                          example: "texas"
+                        death:
+                          type: string
+                          required: true
+                          example: "texas"
+                        vaccinated:
+                          type: string
+                          required: true
+                          example: "texas"
+  select-cvd-res-datatype:
+    type: array
+    items:
+      type: object
+      properties:
+                    source:
+                      type: string
+                      minLength: 1
+                      maxLength: 60
+                      required: true
+                      example: "hospital"
+                    caseType:
+                      type: string
+                      minLength: 1
+                      maxLength: 10
+                      required: true
+                      example: "positive"
+                    firstName:
+                      type: string
+                      minLength: 1
+                      maxLength: 30
+                      required: true
+                      example: "jake"
+                    lastName:
+                      type: string
+                      minLength: 1
+                      maxLength: 30
+                      required: true
+                      example: "curry"
+                    phone:
+                      type: string
+                      minLength: 1
+                      maxLength: 15
+                      required: true
+                      example: "123-5214-625"
+                    email:
+                      type: string
+                      minLength: 1
+                      maxLength: 30
+                      required: true
+                      example: "test@test.com"
+                    dateOfBirth:
+                      type: string
+                      required: true
+                      example: "1989-04-26"
+                    nationalID:
+                      type: string
+                      minLength: 1
+                      maxLength: 20
+                      required: true
+                      example: "1251-5142"
+                    nationalIDType:
+                      type: string
+                      minLength: 1
+                      maxLength: 30
+                      required: true
+                      example: "SSN"
+                    address:
+                      type: object
+                      properties:
+                        streetAddress:
+                          type: string
+                          minLength: 1
+                          maxLength: 50
+                          required: true
+                          example: "1600 Pennsylvania Avenue NW"
+                        city:
+                          type: string
+                          minLength: 1
+                          maxLength: 30
+                          required: true
+                          example: "washington"
+                        state:
+                          type: string
+                          minLength: 1
+                          maxLength: 30
+                          required: true
+                          example: "NewYork"
+                        postal:
+                          type: string
+                          minLength: 1
+                          maxLength: 30
+                          required: true
+                          example: "52500"
+                        country:
+                          type: string
+                          minLength: 1
+                          maxLength: 30
+                          required: true
+                          example: "America"
+                    createDate:
+                      type: string
+                      required: false
+                      example: "2010-12-18"
+                    updateDate:
+                      type: string
+                      required: false
+                      example: "2010-12-18"
+  update-cvd-res-datatype:
+    type: object
+    xml:
+      name: case
+    properties:
+              caseID:
+                type: string
+                required: true
+                example: "121"
+  update-cvd-req-data-type:
+    type: object
+    xml:
+      name: covidCase
+    properties:
+                    source:
+                      type: string
+                      minLength: 1
+                      maxLength: 60
+                      required: true
+                      example: "hospital"
+                    caseType:
+                      type: string
+                      minLength: 1
+                      maxLength: 10
+                      required: true
+                      example: "positive"
+                    firstName:
+                      type: string
+                      minLength: 1
+                      maxLength: 30
+                      required: true
+                      example: "jake"
+                    lastName:
+                      type: string
+                      minLength: 1
+                      maxLength: 30
+                      required: true
+                      example: "curry"
+                    phone:
+                      type: string
+                      minLength: 1
+                      maxLength: 15
+                      required: true
+                      example: "123-5214-625"
+                    email:
+                      type: string
+                      minLength: 1
+                      maxLength: 30
+                      required: true
+                      example: "test@test.com"
+                    dateOfBirth:
+                      type: string
+                      required: true
+                      example: "1989-04-26"
+                    nationalID:
+                      type: string
+                      minLength: 1
+                      maxLength: 20
+                      required: true
+                      example: "1251-5142"
+                    nationalIDType:
+                      type: string
+                      minLength: 1
+                      maxLength: 30
+                      required: true
+                      example: "SSN"
+                    address:
+                      type: object
+                      properties:
+                        streetAddress:
+                          type: string
+                          minLength: 1
+                          maxLength: 50
+                          required: true
+                          example: "1600 Pennsylvania Avenue NW"
+                        city:
+                          type: string
+                          minLength: 1
+                          maxLength: 30
+                          required: true
+                          example: "washington"
+                        state:
+                          type: string
+                          minLength: 1
+                          maxLength: 30
+                          required: true
+                          example: "NewYork"
+                        postal:
+                          type: string
+                          minLength: 1
+                          maxLength: 30
+                          required: true
+                          example: "52500"
+                        country:
+                          type: string
+                          minLength: 1
+                          maxLength: 30
+                          required: true
+                          example: "America"
+     
+  update-err-resp-data-type:
+    type: object
+    xml:
+      name: case
+    properties:
+              status:
+                type: number
+                required: true
+                example: 503
+              message:
+                type: string
+                required: true
+                example: "The (upstream) service is temporarily not available"
+  select-rep-state-cvd-res-data-type:
+    type: array
+    items:
+      type: object
+      properties:
+                state:
+                  type: string
+                  required: true
+                  example: "texas"
+                report:
+                  type: object
+                  properties:
+                    total:
+                      type: string
+                      required: true
+                      example: "texas"
+                    positive:
+                      type: string
+                      required: true
+                      example: "texas"
+                    recovered:
+                      type: string
+                      required: true
+                      example: "texas"
+                    death:
+                      type: string
+                      required: true
+                      example: "texas"
+                    vaccinated:
+                      type: string
+                      required: true
+                      example: "texas"
+
+
+  

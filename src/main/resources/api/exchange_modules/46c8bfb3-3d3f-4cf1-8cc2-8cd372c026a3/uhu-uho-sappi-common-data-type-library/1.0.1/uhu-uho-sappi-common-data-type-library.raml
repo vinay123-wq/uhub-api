@@ -1,0 +1,40 @@
+#%RAML 1.0 Library
+usage: commonn error response datatypes library
+types:
+  error-response:
+    type: object
+    description: global datatype for all common error api response
+    properties:
+              code:
+                type: number
+                required: true
+                example: 503
+              message:
+                type: string
+                required: true
+                example: "Service unavailable"
+              description:
+                type: string
+                required: true
+                example: "The (upstream) service is temporarily   not available"
+              dateTime:
+                type: string
+                required: true
+                example: "2021-05-31T06:18:02Z"
+              transactionId:
+                type: string
+                required: true
+                example: "44b32520-61ee-47b4-907d-fa15869f3c4d"
+  update-err-resp-data-type:
+    type: object
+    xml:
+      name: case
+    properties:
+              status:
+                type: number
+                required: true
+                example: 503
+              message:
+                type: string
+                required: true
+                example: "The (upstream) service is temporarily not available"
