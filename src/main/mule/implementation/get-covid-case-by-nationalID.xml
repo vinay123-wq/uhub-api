@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="get:\cases\(nationalID):uho-uhub-sappi-config">
+		<ee:transform doc:name="Transaction &amp; Correlation ID" doc:id="d392b2bd-ab37-48c7-980e-62c07520293d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="x-transaction-id" ><![CDATA[attributes.headers.'x-transaction-id']]></ee:set-variable>
+				<ee:set-variable variableName="x-correlation-id" ><![CDATA[attributes.headers.'x-correlation-id']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Start Log" doc:id="296bbbc6-410a-4766-8cbc-8b3024201f45" message="get covid case record by national id flow started" />
+		<set-variable value="#[attributes.uriParams.nationalID]" doc:name="Set NationalID" doc:id="d900e073-b8f6-490d-aa78-4dfc13fc27f9" variableName="nationalID" />
+		<db:select doc:name="Select record upon NationaID" doc:id="af4d5454-3d6b-4b75-adb7-5218c1f933f2" config-ref="Database_Config" >
+			<db:sql ><![CDATA[select case_id, source, case_type, first_name, last_name, phone, email, date_of_birth, national_id, national_id_type, street_address, city, state, postal, country from uhub where national_id=:nationaID 
+                 
+                  
+                  
+                  
+                
+                 
+                  
+                  
+                  
+                 
+                  
+                  
+                 ]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	nationaID:vars.nationalID
+}]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Choice" doc:id="913813af-7a01-4b6d-9dcd-80b6402d0872" >
+			<when expression="#[sizeOf(payload) &gt; 0]" >
+				<ee:transform doc:name="Transform Message" doc:id="2ed7373e-6d98-455e-866d-f82b7242a66b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	source: payload01.SOURCE default "",
+	caseID: payload01.CASE_ID as String,
+	caseType: payload01.CASE_TYPE default "",
+	firstName: payload01.FIRST_NAME default "",
+	lastName: payload01.LAST_NAME default "",
+	phone: payload01.PHONE default "",
+	email: payload01.EMAIL default "",
+	dateOfBirth: payload01.DATE_OF_BIRTH as String default "",
+	nationalID: payload01.NATIONAL_ID default "",
+	nationalIDType: payload01.NATIONAL_ID_TYPE default "",
+	address: {
+		streetAddress: payload01.STREET_ADDRESS default "",
+		city: payload01.CITY default "",
+		state: payload01.STATE default "",
+		postal: payload01.POSTAL default "",
+		country: payload01.COUNTRY default ""
+	}
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="code" ><![CDATA[200]]></ee:set-variable>
+						<ee:set-variable variableName="message" ><![CDATA["OK"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<raise-error doc:name="Raise error" doc:id="1e82a386-3203-4cb2-8e6e-5a2d15f88eae" type="CUSTOM:CASE_NOT_FOUND" description="The server has not found anything matching the Request-URI"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="End Logger" doc:id="c959a75d-dee4-448e-81e4-57bf874bf088" message="flow has ended" />
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a857b69d-bd9e-439b-8163-f4da93cf3a50" type="CUSTOM:CASE_NOT_FOUND">
+				<ee:transform doc:name="Transform Message" doc:id="b30cd1ec-d0b0-4c77-805c-5e9e4858ce42" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "code": 404,
+    "message": "Resource not found",
+    "description": "The server has not found anything matching the Request-URI",
+    "dateTime":"2021-05-31T06:18:02Z",
+    "transactionId":"48n32920-69ne-47b4-907d-fa15869f3c4d"
+}
+]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+
+    </flow></mule>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="get:\reports:uho-uhub-sappi-config">
+		<ee:transform doc:name="Transform Message" doc:id="af628111-f2f7-4b80-af15-3d7ed161f59f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="x-correlation-id" ><![CDATA[attributes.headers.'x-correlation-id' default ""]]></ee:set-variable>
+				<ee:set-variable variableName="x-transaction-id" ><![CDATA[attributes.headers.'x-transaction-id' default uuid()]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Start Logger" doc:id="8d32ec5d-605e-44f2-b818-16cf7a5445e3" message="flow started" />
+		<ee:transform doc:name="Transform Message1" doc:id="7f4cdc75-6b17-4a06-92fb-43d9f7317ef8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="reportsDynamicQuery" ><![CDATA[if (!isEmpty(attributes.queryParams.state)) 
+  "select count(*) as count, case_type, state from uhub where upper(state)='" ++ upper(attributes.queryParams.state) ++ "' group by case_type, state"
+else 
+  "select count(*) as count, case_type, state from uhub group by case_type, state"
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select Case Reports" doc:id="3666b96c-19df-42a8-bc03-198ee1e8dddc" config-ref="Database_Config" >
+			<db:sql ><![CDATA[#["$(vars.reportsDynamicQuery)"]]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message2" doc:id="845c7c5b-c41d-4f21-8c46-7e25bec59503" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+fun vaccinationByState(state) = (payload filter(($.STATE == state as String) and ($.case_type == "vaccinated"))map{
+	COUNT:$.count
+})[0]
+---
+
+	((payload groupBy ($.STATE) mapObject {
+		caseReports: {
+			state:$$,
+			reports: {
+				total:($.COUNT reduce $ + $$) - (vaccinationByState($$).COUNT as Number default 0),
+				($ orderBy($.CASE_TYPE) map {
+					($.CASE_TYPE): $.COUNT
+				}
+					
+				)
+			}
+		}
+	}).*caseReports) default []
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="9a8e97bf-f487-4b73-b203-a86a07ca368f" message='#["end"]'/>
+
+    </flow></mule>
